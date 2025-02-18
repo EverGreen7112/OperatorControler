@@ -22,30 +22,6 @@ def set_branch_number(number: int, branch_sub: DoublePublisher):
     branch_sub.set(number)
 
 
-def change_color(button):
-    global last_button
-    if last_button :
-        last_button.config(bg="blue")
-    button.config(bg='red')
-    last_button = button
-
-def change_color_for_Level(button):
-    global last_L
-    if last_L :
-        last_L.config(bg="blue")
-    button.config(bg='red')
-    last_L = button
-
-def set_vals_for_Levels(button, number: int, elevator_sub: DoublePublisher):
-    set_elevator_level(number, elevator_sub)
-    change_color_for_Level(button)
-
-
-def set_vals_for_Branches(button, number: int, branch_sub: DoublePublisher):
-    set_branch_number(number, branch_sub)
-    change_color(button)
-
-
 
 
 if __name__ == "__main__":
@@ -64,24 +40,45 @@ if __name__ == "__main__":
     screen = tk.Tk()
     screen.geometry('1920x1080')
 
-    #img= PhotoImage(file='background.png')
-    # Define the PhotoImage Constructor by passing the image file
-    #img = tk.PhotoImage(file='background.png', master=screen)
-    #img_label = tk.Label(screen, image=img)
+    # funcs
+    def change_color(button):
+        global last_button
+        if last_button :
+            last_button.config(image=branch[0], bg='blue')
+        button.config(image=branch[1], bg='red')
+        last_button = button
 
+    def change_color_for_Level(button):
+        global last_L
+        if last_L :
+            for i in range(4):
+                if last_L == level_button[i]: 
+                    last_L.config(image=level_img[0][i], bg="blue")
+        for i in range(4):
+            if button == level_button[i]: 
+                button.config(image=level_img[1][i], bg='red')
+        last_L = button
+
+    def set_vals_for_Levels(button, number: int, elevator_sub: DoublePublisher):
+        set_elevator_level(number, elevator_sub)
+        change_color_for_Level(button)
+
+
+    def set_vals_for_Branches(button, number: int, branch_sub: DoublePublisher):
+        set_branch_number(number, branch_sub)
+        change_color(button)
 
     #images
-    L1 = PhotoImage(file='L4.png')
-    L2 = PhotoImage(file='L3.png')
-    L3 = PhotoImage(file='L2.png')
-    L4 = PhotoImage(file='L1.png')
-    branch = PhotoImage(file='reef_button.png')
-    reef = PhotoImage(file='Reef.png')
+    level_img = [[PhotoImage(file='img/level/L4.png'),PhotoImage(file='img/level/L3.png'),PhotoImage(file='img/level/L2.png'),PhotoImage(file='img/level/L1.png')],
+                [PhotoImage(file='img/level/L4_pressed.png'),PhotoImage(file='img/level/L3_pressed.png'),PhotoImage(file='img/level/L2_pressed.png'),PhotoImage(file='img/level/L1_pressed.png')]]
     
-    # static images
+    branch = [PhotoImage(file='img/reef/reef_button.png'),PhotoImage(file='img/reef/reef_button_pressed.png')]
+    reef = PhotoImage(file='img/reef/Reef.png')
+
+    feeder = PhotoImage(file='feeder button.png')
 
     # Add image file 
-    bg = PhotoImage(file = "DS_bg.png") 
+    bg = PhotoImage(file = "img/DS_bg.png") 
     
     # Create Canvas 
     canvas1 = Canvas( screen, width = 1920, height = 1080) 
@@ -90,7 +87,6 @@ if __name__ == "__main__":
     
     # Display image 
     canvas1.create_image( 0, 0, image = bg,  anchor = "nw") 
-   
 
     Reef = tk.Label(screen, image=reef)
     Reef.place(x=-500,y=-140)
@@ -99,78 +95,28 @@ if __name__ == "__main__":
     last_button = None
     last_L = None
 
+    # buttons 
 
-    # buttons
 
-    '''reset = tk.Button(screen, text='reset', font=('Ariel', 50), bg='blue', bg='green', activebackground='red')
-    reset
-    reset.place(x=1000,y=1000)'''
+    #creating levels
+    level_button_maping = [[1070, 60],[1070, 230],[1070, 400],[1070, 570]]
+    level_button = [tk.Button(screen),tk.Button(screen),tk.Button(screen),tk.Button(screen)]
 
-    l4 = tk.Button(screen, text='L4', image=L1, compound='center', font=('Ariel', 50), bg='blue')
-    l4.config(command= partial(set_vals_for_Levels,l4,4,elevator_sub))
-    l4.pack()
-    l4.place(x=1070, y=60)
+    feeder_button = tk.Button(screen,text='feeder', image=feeder,compound='center',font=('Ariel', 50),  border=0, bg='gray1')
+    feeder_button.config(command= partial(set_vals_for_Levels,feeder_button,0,elevator_sub))
+    feeder_button.place(x=810,y=500)
 
-    l3 = tk.Button(screen, text='L3', image=L2, compound='center', font=('Ariel', 50), bg='blue')
-    l3.config(command= partial(set_vals_for_Levels,l3,3, elevator_sub))
-    l3.place(x=1070, y=230)
+    for i in range(len(level_button)):
+        level_button[i].config(command=partial(set_vals_for_Levels,level_button[i],4-i,elevator_sub),text=('L' + str(4-i)), image=level_img[0][i], compound='center',font=('Ariel', 50),bg='blue')
+        level_button[i].place(x=level_button_maping[i][0],y=level_button_maping[i][1])
 
-    l2 = tk.Button(screen, text='L2', image=L3, compound='center', font=('Ariel', 50), bg='blue')
-    l2.config(command= partial(set_vals_for_Levels,l2,2, elevator_sub))
-    l2.place(x=1070, y=400)
+    #creating branches
+    branch_button_loction = [[370, 610],[470, 610],[610, 500],[710, 380],[710, 170],[610, 90],[470, 0],[370, 0],[220, 90],[120, 170],[120, 380],[220, 500]] 
+    branch_button = [tk.Button(screen), tk.Button(screen),tk.Button(screen),tk.Button(screen), tk.Button(screen),tk.Button(screen),tk.Button(screen), tk.Button(screen),tk.Button(screen),tk.Button(screen), tk.Button(screen),tk.Button(screen)]
 
-    l1 = tk.Button(screen, text='L1', image=L4, compound='center', font=('Ariel', 50), bg='blue')
-    l1.config(command= partial(set_vals_for_Levels,l1,1, elevator_sub))
-    l1.place(x=1070, y=570)
+    for i in range(len(branch_button)):
+        branch_button[i].config(command=partial(set_vals_for_Branches,branch_button[i], i+1, branch_sub),text=i+1, image=branch[0], compound='center',font=('Ariel',30),bg='blue')
+        branch_button[i].place(x=branch_button_loction[i][0],y=branch_button_loction[i][1])
 
-    branch1 = tk.Button(screen, text='1', image=branch, compound='center',font=('Ariel', 30),bg='blue')
-    branch1.config(command=partial(set_vals_for_Branches,branch1, 1, branch_sub))
-    branch1.place(x=370, y=610)
-
-    branch2 = tk.Button(screen, text='2', image=branch, compound='center',font=('Ariel', 30), bg='blue')
-    branch2.config(command=partial(set_vals_for_Branches,branch2, 2, branch_sub))
-    branch2.place(x=470, y=610)
-
-    branch3 = tk.Button(screen, text='3', image=branch, compound='center',font=('Ariel', 30), bg='blue')
-    branch3.config(command=partial(set_vals_for_Branches,branch3, 3, branch_sub))
-    branch3.place(x=610, y=500)
-
-    branch4 = tk.Button(screen, text='4', image=branch, compound='center',font=('Ariel', 30), bg='blue')
-    branch4.config(command=partial(set_vals_for_Branches,branch4, 4, branch_sub))
-    branch4.place(x=710, y=380)
-
-    branch5 = tk.Button(screen, text='5', image=branch, compound='center',font=('Ariel', 30), bg='blue')
-    branch5.config(command=partial(set_vals_for_Branches,branch5, 5, branch_sub))
-    branch5.place(x=710, y=170)
-
-    branch6 = tk.Button(screen, text='6', image=branch, compound='center',font=('Ariel', 30), bg='blue')
-    branch6.config(command=partial(set_vals_for_Branches,branch6, 6, branch_sub))
-    branch6.place(x=610, y=90)
-
-    branch7 = tk.Button(screen, text='7', image=branch, compound='center',font=('Ariel', 30), bg='blue')
-    branch7.config(command=partial(set_vals_for_Branches,branch7, 7, branch_sub))
-    branch7.place(x=470, y=0)
-
-    branch8 = tk.Button(screen, text='8', image=branch, compound='center',font=('Ariel', 30), bg='blue')
-    branch8.config(command=partial(set_vals_for_Branches,branch8, 8, branch_sub))
-    branch8.place(x=370, y=0)
-
-    branch9 = tk.Button(screen, text='9', image=branch, compound='center',font=('Ariel', 30), bg='blue')
-    branch9.config(command=partial(set_vals_for_Branches,branch9, 9, branch_sub))
-    branch9.place(x=220, y=90)
-
-    branch10 = tk.Button(screen, text='10', image=branch, compound='center',font=('Ariel', 30), bg='blue')
-    branch10.config(command=partial(set_vals_for_Branches,branch10, 10, branch_sub))
-    branch10.place(x=120, y=170)
-
-    branch11 = tk.Button(screen, text='11', image=branch, compound='center',font=('Ariel', 30), bg='blue')
-    branch11.config(command=partial(set_vals_for_Branches,branch11, 11, branch_sub))
-    branch11.place(x=120, y=380)
-
-    branch12 = tk.Button(screen, text='12', image=branch, compound='center',font=('Ariel', 30), bg='blue')
-    branch12.config(command=partial(set_vals_for_Branches,branch12, 12, branch_sub))
-    branch12.place(x=220, y=500)
-
-    
 
     screen.mainloop()
