@@ -8,8 +8,6 @@ from ntcore import BooleanPublisher, DoublePublisher
 
 current_elevator_level = 1
 current_branch_number = 1
-current_feeder_side = False
-current_inner = False
 
 
 def set_elevator_level(level: int, elevator_sub: DoublePublisher):
@@ -32,8 +30,10 @@ if __name__ == "__main__":
     table = inst.getTable("RobotController")
     elevator_pub = table.getDoubleTopic("elevator").publish()
     branch_pub = table.getDoubleTopic("branch").publish()
-    feeder_pub = table.getBooleanTopic("feeder").publish()
+    feeder_pub = table.getDoubleTopic("feeder").publish()
     inner_pub = table.getBooleanTopic("inner").publish()
+    led_pub = table.getBooleanTopic("led").publish()
+    allince_sub = table.getBooleanTopic("allince").subscribe(True)
 
     inst.startClient4("example")
     inst.setServerTeam(7112)
@@ -48,9 +48,17 @@ if __name__ == "__main__":
     def change_color(button):
         global last_button
         if last_button :
-            last_button.config(image=branch[0], bg='blue')
+            last_button.config(image=branch[0],bg='blue')
         button.config(image=branch[1], bg='red')
         last_button = button
+    
+    def change_feeder_color(button):
+        global last_feeder
+        last_feeder.config(image = feeder[0])
+        for i in range(2):
+            if button == feeder_button[i]:
+                button.config(image=feeder[1])
+                last_feeder = button
 
     def change_color_for_Level(button):
         global last_L
@@ -63,25 +71,14 @@ if __name__ == "__main__":
                 button.config(image=level_img[1][i], bg='red')
         last_L = button
 
-    def change_feeder_color(button):
-        global is_right
-        if is_right == False:
-            button.config(image = feeder[1] , text = "left")
-            feeder_pub.set(False)
-            is_right = True
-        else:
-            button.config(image = feeder[0], text = "right")
-            feeder_pub.set(True)
-            is_right = False
-
     def change_inner_color(button):
         global is_inner
         if is_inner == False:
-            button.config(image = feeder[1] , text = "outer")
+            button.config(image = inner[1] , text = "outer")
             inner_pub.set(False)
             is_inner = True
         else:
-            button.config(image = feeder[0], text = "inner")
+            button.config(image = inner[0], text = "inner")
             inner_pub.set(True)
             is_inner = False
 
@@ -93,15 +90,17 @@ if __name__ == "__main__":
     def set_vals_for_Branches(button, number: int, branch_sub: DoublePublisher):
         set_branch_number(number, branch_sub)
         change_color(button)
-
+        change_feeder_color(button)
     #images
     level_img = [[PhotoImage(file='img/level/L4.png'),PhotoImage(file='img/level/L3.png'),PhotoImage(file='img/level/L2.png'),PhotoImage(file='img/level/L1.png')],
                 [PhotoImage(file='img/level/L4_pressed.png'),PhotoImage(file='img/level/L3_pressed.png'),PhotoImage(file='img/level/L2_pressed.png'),PhotoImage(file='img/level/L1_pressed.png')]]
     
     branch = [PhotoImage(file='img/reef/reef_button.png'),PhotoImage(file='img/reef/reef_button_pressed.png')]
-    reef = PhotoImage(file='img/reef/Reef.png')
+    reef = [PhotoImage(file='img/reef/Reef.png'),PhotoImage(file='img/reef/Reef_red.png')]
 
-    feeder = [PhotoImage(file='feeder button.png'), PhotoImage(file='feeder button red.png')]
+    feeder = [PhotoImage(file='feeder button.png'), PhotoImage(file='feeder_button_pressed.png')]
+
+    inner = [PhotoImage(file='inner button.png'),PhotoImage(file='inner button pressed.png') ]
 
 
     # Add image file 
@@ -115,26 +114,35 @@ if __name__ == "__main__":
     # Display image 
     canvas1.create_image( 0, 0, image = bg,  anchor = "nw") 
 
-    Reef = tk.Label(screen, image=reef)
+    if allince_sub.get:
+        Reef = tk.Label(screen, image=reef[0])
+    else:
+        Reef = tk.Label(screen,image=reef[1])
     Reef.place(x=-250,y=-140)
     
 
     last_button = None
     last_L = None
+    last_feeder = None
     is_inner = False
-    is_right = False
 
     # buttons 
 
 
+    feeder_button_maping = [[150,50],[30,50]]
+    feeder_button = [tk.Button(screen, text='right', ), tk.Button(screen, text='left')]
 
-    feeder_button = tk.Button(screen, text="right", image=feeder[0], compound='center',font=('Ariel',30),borderwidth=0,bg='gray0',activebackground='gray0')
-    feeder_button.config(command=partial(change_feeder_color, feeder_button))
-    feeder_button.place(x=30,y=100)
+    for i in range(2):
+        feeder_button[i].config(command=partial(set_vals_for_Branches, feeder_button[i], i+13, feeder_pub),image=branch[0], compound='center',font=('Ariel',20),bg='blue', borderwidth=5)
+        feeder_button[i].place(x=feeder_button_maping[i][0],y=feeder_button_maping[i][1])
 
-    feeder_inner_button = tk.Button(screen, text="inner", image=feeder[0], compound='center',font=('Ariel',30), borderwidth=0,bg='gray0',activebackground='gray0')
+    feeder_inner_button = tk.Button(screen, text="inner", image=inner[0], compound='center',font=('Ariel',30), borderwidth=0,bg='gray0',activebackground='gray0')
     feeder_inner_button.config(command=partial(change_inner_color, feeder_inner_button))
-    feeder_inner_button.place(x=30,y=400)
+    feeder_inner_button.place(x=35,y=270)
+
+    led_button = tk.Button(screen, text="led", image=inner[0], compound='center',font=('Ariel',30), borderwidth=0,bg='gray0',activebackground='gray0')
+    led_button.config(command=partial(led_pub.set,led_button))
+    led_button.place(x=35,y=500)
 
 
     #creating levels
