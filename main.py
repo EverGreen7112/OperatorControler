@@ -82,6 +82,15 @@ if __name__ == "__main__":
             inner_pub.set(True)
             is_inner = False
 
+    def set_val_for_Led():
+        global last_led
+        if last_led == False:
+            led_pub.set(False)
+            last_led = True
+        else:
+            led_pub.set(True)
+            last_led = False
+
     def set_vals_for_Levels(button, number: int, elevator_sub: DoublePublisher):
         set_elevator_level(number, elevator_sub)
         change_color_for_Level(button)
@@ -114,7 +123,7 @@ if __name__ == "__main__":
     # Display image 
     canvas1.create_image( 0, 0, image = bg,  anchor = "nw") 
 
-    if allince_sub.get:
+    if allince_sub.get():
         Reef = tk.Label(screen, image=reef[0])
     else:
         Reef = tk.Label(screen,image=reef[1])
@@ -125,6 +134,7 @@ if __name__ == "__main__":
     last_L = None
     last_feeder = None
     is_inner = False
+    last_led =  False
 
     # buttons 
 
@@ -141,7 +151,7 @@ if __name__ == "__main__":
     feeder_inner_button.place(x=35,y=270)
 
     led_button = tk.Button(screen, text="led", image=inner[0], compound='center',font=('Ariel',30), borderwidth=0,bg='gray0',activebackground='gray0')
-    led_button.config(command=partial(led_pub.set,led_button))
+    led_button.config(command=partial(set_val_for_Led))
     led_button.place(x=35,y=500)
 
 
