@@ -168,10 +168,26 @@ if __name__ == "__main__":
     #creating branches
     branch_button_loction = [[370 + 250, 610],[470 + 250, 610],[610 + 250, 500],[710 + 250, 380],[710 + 250, 170],[610 + 250, 90],[470 + 250, 0],[370 + 250, 0],[220 + 250, 90],[120 + 250, 170],[120 + 250, 380],[220 + 250, 500]] 
     branch_button = [tk.Button(screen), tk.Button(screen),tk.Button(screen),tk.Button(screen), tk.Button(screen),tk.Button(screen),tk.Button(screen), tk.Button(screen),tk.Button(screen),tk.Button(screen), tk.Button(screen),tk.Button(screen)]
+    if allince_sub.get():
+        for i in range(len(branch_button)):
+            branch_button[i].config(command=partial(set_vals_for_Branches,branch_button[i], i+1, branch_pub),text=i+1, image=branch[0], compound='center',font=('Ariel',30),bg='blue')
+            branch_button[i].place(x=branch_button_loction[i][0],y=branch_button_loction[i][1])
+    else:
+        branch_button[0].config(command=partial(set_vals_for_Branches,branch_button[0], 7, branch_pub),text=1, image=branch[0], compound='center',font=('Ariel',30),bg='blue')
+        branch_button[1].config(command=partial(set_vals_for_Branches,branch_button[1], 8, branch_pub),text=2, image=branch[0], compound='center',font=('Ariel',30),bg='blue')
+        branch_button[2].config(command=partial(set_vals_for_Branches,branch_button[2], 9, branch_pub),text=3, image=branch[0], compound='center',font=('Ariel',30),bg='blue')
+        branch_button[3].config(command=partial(set_vals_for_Branches,branch_button[3], 10, branch_pub),text=4, image=branch[0], compound='center',font=('Ariel',30),bg='blue')
+        branch_button[4].config(command=partial(set_vals_for_Branches,branch_button[4], 11, branch_pub),text=5, image=branch[0], compound='center',font=('Ariel',30),bg='blue')
+        branch_button[5].config(command=partial(set_vals_for_Branches,branch_button[5], 12, branch_pub),text=6, image=branch[0], compound='center',font=('Ariel',30),bg='blue')
+        branch_button[6].config(command=partial(set_vals_for_Branches,branch_button[6], 1, branch_pub),text=7, image=branch[0], compound='center',font=('Ariel',30),bg='blue')
+        branch_button[7].config(command=partial(set_vals_for_Branches,branch_button[7], 2, branch_pub),text=8, image=branch[0], compound='center',font=('Ariel',30),bg='blue')
+        branch_button[8].config(command=partial(set_vals_for_Branches,branch_button[8], 3, branch_pub),text=9, image=branch[0], compound='center',font=('Ariel',30),bg='blue')
+        branch_button[9].config(command=partial(set_vals_for_Branches,branch_button[9], 4, branch_pub),text=10, image=branch[0], compound='center',font=('Ariel',30),bg='blue')
+        branch_button[10].config(command=partial(set_vals_for_Branches,branch_button[10], 5, branch_pub),text=11, image=branch[0], compound='center',font=('Ariel',30),bg='blue')
+        branch_button[11].config(command=partial(set_vals_for_Branches,branch_button[11], 6, branch_pub),text=12, image=branch[0], compound='center',font=('Ariel',30),bg='blue')
+        for i in range(len(branch_button)):
+            branch_button[i].place(x=branch_button_loction[i][0],y=branch_button_loction[i][1])
 
-    for i in range(len(branch_button)):
-        branch_button[i].config(command=partial(set_vals_for_Branches,branch_button[i], i+1, branch_pub),text=i+1, image=branch[0], compound='center',font=('Ariel',30),bg='blue')
-        branch_button[i].place(x=branch_button_loction[i][0],y=branch_button_loction[i][1])
 
 
     screen.mainloop()
